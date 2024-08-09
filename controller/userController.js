@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const { verifyToken } = require("../middlewares/verifyToken.js");
 const  kontrol = require('istckimlik');
 const validator = require('validator');
+const { CHAR } = require('sequelize');
 module.exports = {
      phoneNumberCheck: async (req, res) => {
       const { phoneNumber } = req.body;
@@ -165,7 +166,7 @@ emailAndBirthYearCheck : async (req, res, next) => {
       if (existingUser) {
         return res.status(400).json({ status: 'error', message: 'Bu TCKN ile bir kullanıcı mevcut.' });
       }
-      await userModel.update(
+      await userService.update(userModel,
         { TCKN, country, city, district, address},
         { where: { userID: userid } }
       );
@@ -185,37 +186,46 @@ emailAndBirthYearCheck : async (req, res, next) => {
     }
   },
 
-    TaxNoCheck: async (req, res, next) => {
-      const { companyName, taxNo, taxPlaceName, country, city, district, address} = req.body;
-      const { userid } = req.user;
-      const validateTaxNumber = (taxNo) => {
-        const taxNoRegex = /^\d{10}$/;
-        return taxNoRegex.test(taxNo);
-      };
-      if (!taxNo || !validateTaxNumber(taxNo)) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Geçersiz vergi numarası.',
-        });
+  TaxNoCheck: async (req, res, next) => {
+    const { companyName, taxNo, taxPlaceName, country, city, district, address } = req.body;
+    const { userid } = req.user;
+    let sum = 0;
+    if (taxNo !== null && taxNo.length === 10 && !isNaN(taxNo)) {
+      const lastDigit = parseInt(taxNo.charAt(9), 10);
+      
+      for (let i = 0; i < 9; i++) {
+        const digit = parseInt(taxNo.charAt(i), 10);
+        let temp = (digit + 10 - (i + 1)) % 10;
+        sum += temp === 9 ? temp : (temp * Math.pow(2, 10 - (i + 1))) % 9;
       }
-  
-      try {
-          await userModel.update(
-          { companyName, taxNo, taxPlaceName, country, city, district, address},
-          { where: { userID: userid }});
-  
-        res.status(200).json({
-          status: 'success',
-          message: 'Vergi numarası geçerli ve güncellendi.',
-        });
-      } catch (error) {
-        console.error('Vergi numarası doğrulama hatası:', error);
-        return res.status(500).json({
-          status: 'error',
-          message: 'Internal server hatası.',
-        });
+
+      if (lastDigit === (10 - (sum % 10)) % 10) {
+        try {
+          await userService.update(userModel, 
+            { companyName, taxNo, taxPlaceName, country, city, district, address }, 
+            { where: { userID: userid } }
+          );
+          
+          return res.status(200).json({
+            status: 'success',
+            message: 'Vergi numarası geçerli ve güncellendi.',
+          });
+        } catch (error) {
+          console.error('Vergi numarası güncelleme hatası:', error);
+          return res.status(500).json({
+            status: 'error',
+            message: 'Internal server hatası.',
+          });
+        }
       }
-    },
+    }
+    
+    return res.status(400).json({
+      status: 'error',
+      message: 'Geçersiz vergi numarası.',
+    });
+  },
+    
     CardInfoCheck: async (req, res, next) => {
       const { usercardName, creditCardName, cardNumber, expiryDateMonth, expiryDateYear, cvvCode } = req.body;
       const { userid } = req.user;
@@ -315,7 +325,7 @@ emailAndBirthYearCheck : async (req, res, next) => {
             return res.status(200).json({
               status: 'success',
               message: 'Login başarılı',
-              token: token
+             
             });
           }
     
