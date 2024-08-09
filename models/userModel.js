@@ -1,3 +1,4 @@
+const Joi = require('joi');
 module.exports = (sequelize, Sequelize) => {
     const users = sequelize.define(
         "users",
@@ -10,19 +11,19 @@ module.exports = (sequelize, Sequelize) => {
 
             firstName : {
                 type : Sequelize.STRING,
-                allowNull : false
+                allowNull : true
             },
             lastName : {
                 type : Sequelize.STRING,
-                allowNull : false
+                allowNull : true
             },
             birthYear : {
                 type : Sequelize.STRING,
-                allowNull : false
+                allowNull : true
             },
             password : {
                 type : Sequelize.STRING,
-                allowNull : false
+                allowNull : true
 
             },
             phoneNumber : {
@@ -32,71 +33,71 @@ module.exports = (sequelize, Sequelize) => {
             email : {
                 type : Sequelize.STRING,
                 unique : true,
-                allowNull : false
+                allowNull : true
             },
             address : {
-                type : Sequelize.STRING,
-                allowNull : false
+            type: Sequelize.STRING,
+            allowNull: true,
             },
             corporate : {
                 type : Sequelize.BOOLEAN,
-                allowNull : false
+                allowNull : true
             },
             TCKN : {
                 type : Sequelize.STRING,
                 allowNull : true
             },
 
-            Country : {
+            country : {
                 type : Sequelize.STRING,
-                allowNull : false
+                allowNull : true
             },
-            City : {
+            city : {
                 type : Sequelize.STRING,
-                allowNull : false
+                allowNull : true
             },
 
-            District : {
+            district : {
                 type : Sequelize.STRING,
                 allowNull : true
              },
 
             companyName : {
                 type : Sequelize.STRING,
-                allowNull : false
+                allowNull : true
             },
 
             taxNo : {
                 type : Sequelize.STRING,
-                allowNull : false
+                allowNull : true
             },
             taxPlaceName : {
                 type : Sequelize.STRING,
-                allowNull : false
+                allowNull : true
             },
             usercardName : {
                 type : Sequelize.STRING,
-                allowNull : false
+                allowNull : true
             },
             creditCardName : {
                 type : Sequelize.STRING,
-                allowNull : false
+                allowNull : true
             },
             cardNumber : {
                 type : Sequelize.STRING,
-                allowNull : false
+                allowNull : true
             },
             expiryDateMonth: {
                 type : Sequelize.STRING,
-                allowNull : false
+                allowNull : true
             },
             expiryDateYear : {
             type : Sequelize.STRING,
-            allowNull : false
+            allowNull : true
         },
             cvvCode : {
                 type : Sequelize.STRING,
-                allowNull : false
+                allowNull : true
                 
             }
 
@@ -107,4 +108,9 @@ module.exports = (sequelize, Sequelize) => {
         }
     );
     return users;
+
+
+
+
+
 }
