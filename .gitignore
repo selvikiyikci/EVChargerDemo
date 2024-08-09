@@ -143,3 +143,4 @@ services/userService.js
 
 bin/www
 public/stylesheets/style.css
+models/index.js
