@@ -2,10 +2,8 @@ module.exports = (sequelize, Sequelize) => {
     const station  = sequelize.define(
         "station",
         {
-            chargePointID: {
-                autoIncrement: true,    
+            chargePointID: {   
                 type: Sequelize.STRING,
-                primaryKey : true,
                 allowNull: false
             },
             areaID : {
@@ -33,5 +31,5 @@ module.exports = (sequelize, Sequelize) => {
             freezeTableName: true
         }
     );
-    return Location;
+    return station;
 };
