@@ -139,7 +139,7 @@ blogapp/config.js
 .env
 migrations/20240808122137-update-address-enum.js
 config.json
-services/userService.js
+
 
 bin/www
 public/stylesheets/style.css
