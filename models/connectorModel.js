@@ -1,11 +1,10 @@
 module.exports = (sequelize, Sequelize) => {
-    const station  = sequelize.define(
+    const connector  = sequelize.define(
         "connector",
         {
             connectorID: {    
-                autoIncrement: true,    
+              
                 type: Sequelize.STRING,
-                primaryKey : true,
                 allowNull: false
             },
            
