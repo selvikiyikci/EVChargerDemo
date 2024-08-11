@@ -1,6 +1,7 @@
 const express = require('express');
 const {sequelize} = require("../data/db");
 const userController = require('../controller/userController');
+const stationController = require("../controller/stationController");
 const router = express.Router();
 const {verifyToken} = require("../middlewares/verifyToken.js");
 const { verify} = require('jsonwebtoken');
@@ -15,6 +16,7 @@ router.post("/auth/check-TCKN",verifyToken, userController.TCKNcheck);
 router.post("/auth/check-tax-number", verifyToken, userController.TaxNoCheck);
 router.post("/auth/check-credit-card-infos", verifyToken, userController.CardInfoCheck);
 router.post("/auth/login", verifyToken, userController.postLogin);
+router.post("/list-charge-points", stationController.listChargePoints);
 
 
 /* GET home page. */
