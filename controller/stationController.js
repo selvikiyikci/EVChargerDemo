@@ -24,9 +24,7 @@ module.exports = {
       console.log("Girilen longitude bilgisi:", longitude);
 
       const latRange = latitude ? [latitude - 0.1, latitude + 0.1] : undefined;
-      const lonRange = longitude
-        ? [longitude - 0.1, longitude + 0.1]
-        : undefined;
+      const lonRange = longitude ? [longitude - 0.1, longitude + 0.1] : undefined;
 
       const acStations = await stationModel.findAll(userService, {
         where: {
@@ -74,14 +72,7 @@ module.exports = {
       const calculateDistanceForStations = (stations) => {
         return stations.map((station) => {
           const distance =
-            latitude && longitude
-              ? haversineDistance(
-                  latitude,
-                  longitude,
-                  station.latitude,
-                  station.longitude
-                )
-              : null;
+            latitude && longitude ? haversineDistance( latitude, longitude, station.latitude, station.longitude ) : null;
           console.log(`Calculating distance for station: ${station.name}`);
           console.log(`Distance: ${distance}`);
 
@@ -101,11 +92,17 @@ module.exports = {
       const acStationsWithDistance = calculateDistanceForStations(acStations);
       const dcStationsWithDistance = calculateDistanceForStations(dcStations);
 
+      
+      acStationsWithDistance.sort((a, b) => (a.distance-b.distance))
+      dcStationsWithDistance.sort((a, b) => (a.distance-b.distance))
+
+
       res.json({
-        success: true,
-        message: "Veriler başarıyla alındı.",
-        acStations: acStationsWithDistance,
-        dcStations: dcStationsWithDistance,
+        "status" : "success",
+        "data" : {
+          acStations: acStationsWithDistance,
+          dcStations: dcStationsWithDistance
+        }
       });
     } catch (error) {
       console.error(error);
