@@ -10,8 +10,11 @@ const sequelize = new Sequelize(
         host: process.env.DATABASE_HOST,
         dialect: "mysql",
         logging: false,
-    }
-);
+        dialectOptions: { // optional if you have xampp or port borken
+            socketPath: "/opt/lampp/var/mysql/mysql.sock"
+        },
+    });
+    
 const users = require("../models/userModel");
 const rfidCard = require("../models/rfidCardModel");
 const station = require("../models/stationModel");
