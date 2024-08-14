@@ -7,6 +7,10 @@ module.exports = (sequelize, Sequelize) => {
                 allowNull: false,
                 defaultValue: 'default_charge_point_id' // Varsayılan değer
             },
+            areaId : {
+                type : Sequelize.INTEGER,
+                defaultValue : 1
+            },
             name: {    
                 type: Sequelize.STRING,
                 allowNull: false
