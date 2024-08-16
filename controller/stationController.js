@@ -135,13 +135,10 @@ module.exports = {
       const lonRange = longitude ? [parseFloat(longitude) - 0.5, parseFloat(longitude) + 0.5] : undefined;
       const isSearchTextempty = !searchText || searchText.trim() === "";
       const filterStations = (stations, searchText) => {
-  return stations.filter(station => 
+   return stations.filter(station => 
     station.name.toLowerCase().includes(searchText.toLowerCase())
   );
 };
-
-
-
       if (isSearchTextempty) {
         acStations = await getAcStationsWithoutSearchText(latRange, lonRange);
         dcStations = await getDcStationsWithoutSearchText(latRange, lonRange);
