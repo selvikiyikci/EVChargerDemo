@@ -5,6 +5,7 @@ const stationController = require("../controller/stationController");
 const router = express.Router();
 const {verifyToken} = require("../middlewares/verifyToken.js");
 const { verify} = require('jsonwebtoken');
+const connectorController = require("../controller/connectorController.js");
 
 
 // router.get("/category/delete/:categoryid", adminController.get_category_delete);
@@ -17,6 +18,7 @@ router.post("/auth/check-tax-number", verifyToken, userController.TaxNoCheck);
 router.post("/auth/check-credit-card-infos", verifyToken, userController.CardInfoCheck);
 router.post("/auth/login", verifyToken, userController.postLogin);
 router.post("/list-charge-points", stationController.listChargePoints);
+router.get("/charge-point/list-connectors/:stationId", connectorController.getStationById);
 
 
 /* GET home page. */
