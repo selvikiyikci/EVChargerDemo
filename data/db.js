@@ -29,8 +29,8 @@ userModel.hasMany(rfidCardModel, { foreignKey: "userId", as: "rfids" })
 
 
 
-connectorModel.belongsTo(stationModel, { foreignKey: "stationId" })
-stationModel.hasMany(connectorModel, { foreignKey: "stationId", as: "connectors" })
+    connectorModel.belongsTo(stationModel, { foreignKey: "stationId" })
+    stationModel.hasMany(connectorModel, { foreignKey: "stationId", as: "connectors" })
 
 
 
