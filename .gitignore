@@ -144,3 +144,4 @@ config.json
 bin/www
 public/stylesheets/style.css
 models/index.js
+seeders/20240814084023-stationAreaId.js
