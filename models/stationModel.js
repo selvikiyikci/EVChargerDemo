@@ -15,6 +15,20 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.STRING,
                 allowNull: false
             },
+        //
+            district : {
+                type : Sequelize.STRING,
+                allowNull: false
+            },
+            city : {
+                type : Sequelize.STRING,
+                allowNull: false
+            },
+            accessTime : {
+                type : Sequelize.STRING,
+                allowNull: false
+            },
+        //
             latitude: {
                 type: Sequelize.FLOAT,
                 allowNull: false,
