@@ -33,6 +33,10 @@ module.exports = (sequelize, Sequelize) => {
             long: {
                 type: Sequelize.STRING,
                 allowNull: false
+            },
+            stationId: {   // `stationId` için STRING türü tanımlaması
+                type: Sequelize.STRING,
+                allowNull: false
             }
         },
         {
