@@ -146,3 +146,4 @@ public/stylesheets/style.css
 models/index.js
 seeders/20240814084023-stationAreaId.js
 migrations/20240817164254-re-add-connector-foreign-key.js
+seeders/20240814084023-stationAreaId.js
