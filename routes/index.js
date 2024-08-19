@@ -6,6 +6,7 @@ const router = express.Router();
 const {verifyToken} = require("../middlewares/verifyToken.js");
 const { verify} = require('jsonwebtoken');
 const connectorController = require("../controller/connectorController.js");
+const transactionController = require('../controller/transactionController.js');
 
 
 // router.get("/category/delete/:categoryid", adminController.get_category_delete);
@@ -19,6 +20,10 @@ router.post("/auth/check-credit-card-infos", verifyToken, userController.CardInf
 router.post("/auth/login", verifyToken, userController.postLogin);
 router.post("/list-charge-points", stationController.listChargePoints);
 router.get("/charge-point/list-connectors/:stationId", connectorController.getStationById);
+router.post("/charge-point/remote-start-transaction", transactionController.startChargingProcess);
+router.post("/charge-point/remote-stop-transaction", transactionController.stopChargingProcess);
+router.post("/charge-point/meter-values", transactionController.meterValues);
+
 
 
 /* GET home page. */
