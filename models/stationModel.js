@@ -44,7 +44,9 @@ module.exports = (sequelize, Sequelize) => {
             photoURL: {
                 type: Sequelize.STRING,
                 allowNull: false
-            }
+            },
+        
+
         },
         {
             timestamps: false, // Burada 'timestaps' yerine 'timestamps' kullanmanız gerekir.
