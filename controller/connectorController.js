@@ -1,8 +1,34 @@
 const { Op } = require("sequelize");
 const { stationModel } = require("../data/db.js");
 const { connectorModel } = require("../data/db.js");
+const userService = require("../services/userService");
 
 module.exports = {
+  addConnector: async (req,res) => {
+    try {
+      const { connectorID, status, title, power, pricePerkWh, lat, long, stationId } = req.body;
+  
+  
+      const newConnector = await connectorModel.create(
+        {
+        connectorID,
+        status,
+        title,
+        power,
+        pricePerkWh,
+        lat,
+        long,
+        stationId
+      });
+  
+      res.status(201).json(newConnector);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Veri eklenirken bir hata oluştu.' });
+    }
+  },
+
+
   getStationById: async (req, res) => {
     try {
       const { stationId } = req.params;
