@@ -23,6 +23,7 @@ router.get("/charge-point/list-connectors/:stationId", connectorController.getSt
 router.post("/charge-point/remote-start-transaction", transactionController.startChargingProcess);
 router.post("/charge-point/remote-stop-transaction", transactionController.stopChargingProcess);
 router.post("/charge-point/meter-values", transactionController.meterValues);
+router.post("/add-connector", connectorController.addConnector);
 
 
 
