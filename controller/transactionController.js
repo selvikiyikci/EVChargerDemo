@@ -152,5 +152,54 @@ module.exports = {
             console.error('Error fetching meter values:', error);
             res.status(500).json({ status: "error", message: "Error occurred while fetching meter values." });
         }
+        
+    },
+    paymentTransactionDetails: async (req, res) => {
+        try {
+            const { transactionId } = req.params;
+            const token = await fetchToken('1');
+    
+            if (!token) {
+                return res.status(401).json({ status: "error", message: "Token sağlanamadı." });
+            }
+    
+            const response = await fetch(`https://backend.voltgo.com.tr:5008/api/v1/payment/transaction-detail/${transactionId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+    
+            if (!response.ok) {
+                return res.status(response.status).json({ status: "error", message: "API isteği başarısız oldu." });
+            }
+    
+            const data = await response.json();
+    
+            
+            const flatlistData = data.data.flatlistData ? data.data.flatlistData.map(flatlistData => ({
+                id: flatlistData.id,
+                icon: flatlistData.icon,
+                header: flatlistData.header,
+                content: flatlistData.content
+            })) : [];
+    
+            res.json({
+                status: "success",
+                data: {
+                    transactionId: data.data.transactionId,
+                    price: data.data.price,
+                    stationPhoto: data.data.stationPhoto,
+                    station: data.data.station,
+                    location: data.data.location,
+                    connector: data.data.connector,
+                    flatlistData
+                }
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ status: "error", message: "İşlem detayları alınırken bir hata oluştu." });
+        }
     }
-};
+}    
