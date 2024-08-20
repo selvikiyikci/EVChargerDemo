@@ -24,6 +24,7 @@ router.post("/charge-point/remote-start-transaction", transactionController.star
 router.post("/charge-point/remote-stop-transaction", transactionController.stopChargingProcess);
 router.post("/charge-point/meter-values", transactionController.meterValues);
 router.post("/add-connector", connectorController.addConnector);
+router.get("/payment-transaction-details/:transactionId", transactionController.paymentTransactionDetails);
 
 
 
