@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": "2325280",
+    "database": "voltgo",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "2325280",
+    "database": "voltgo",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "2325280",
+    "database": "voltgo",
+    "host": "localhost",
+    "dialect": "mysql"
+  }
+}
