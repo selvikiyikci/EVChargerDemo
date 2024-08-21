@@ -63,7 +63,6 @@ emailAndBirthYearCheck : async (req, res, next) => {
       }
      try {
       const existingUserEmail = await userService.findOne(userModel, { where: { email: email } });
-      const existingUserBirthYear = await userService.findOne(userModel, { where: { birthYear: birthYear } });
   
       if (existingUserEmail) {
         return res.status(400).json({
@@ -72,12 +71,8 @@ emailAndBirthYearCheck : async (req, res, next) => {
         });
       }
   
-      if (existingUserBirthYear) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Bu doğum yılı ile bir kullanıcı mevcut.',
-        });
-      }
+    
+      
     await userModel.update(
       { firstName, lastName, email, birthYear },
       { where: { userID: userid } }
