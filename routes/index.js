@@ -18,6 +18,7 @@ router.post("/auth/check-TCKN",verifyToken, userController.TCKNcheck);
 router.post("/auth/check-tax-number", verifyToken, userController.TaxNoCheck);
 router.post("/auth/check-credit-card-infos", verifyToken, userController.CardInfoCheck);
 router.post("/auth/login", verifyToken, userController.postLogin);
+router.delete("/auth/delete-user-account", verifyToken, userController.deleteUserAccount);
 router.post("/list-charge-points", stationController.listChargePoints);
 router.get("/charge-point/list-connectors/:stationId", connectorController.getStationById);
 router.post("/charge-point/remote-start-transaction", transactionController.startChargingProcess);
