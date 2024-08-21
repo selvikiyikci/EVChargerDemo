@@ -340,5 +340,43 @@ emailAndBirthYearCheck : async (req, res, next) => {
             message: 'Internal Server Error'
           });
         }
+      },
+       deleteUserAccount: async (req, res) => {
+        const { password } = req.body;
+        try {
+          const { userid } = req.user; 
+          const user = await userModel.findOne({ where: { userID: userid } });
+          
+          if (!user) {
+            return res.status(404).json({
+              status: 'error',
+              data: 'User not found',
+            });
+          }     
+   
+          const hashedPassword = user.password;
+          const match = await bcrypt.compare(password, hashedPassword);
+      
+          if (match) {
+            await userModel.destroy({ where: { userID: userid } });
+      
+            return res.status(200).json({
+              status: 'success',
+              data: 'User account deleted',
+            });
+          } else {
+            return res.status(400).json({
+              status: 'error',
+              data: 'Passwords do not match',
+            });
+          }
+        } catch (err) {
+          console.error('Error comparing passwords:', err);
+          return res.status(500).json({
+            status: 'error',
+            data: 'Internal server error',
+          });
+        }
       }
-    };
+}
+      
