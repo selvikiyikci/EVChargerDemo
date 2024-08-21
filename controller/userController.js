@@ -8,6 +8,7 @@ const { verifyToken } = require("../middlewares/verifyToken.js");
 const  kontrol = require('istckimlik');
 const validator = require('validator');
 const { CHAR } = require('sequelize');
+const MaskData = require('maskdata');
 module.exports = {
      phoneNumberCheck: async (req, res) => {
       const { phoneNumber } = req.body;
@@ -341,6 +342,60 @@ emailAndBirthYearCheck : async (req, res, next) => {
           });
         }
       },
+      getUsersInfo: async (req, res) => {
+        try {
+          const { userid } = req.user;
+          const user = await userModel.findOne({ where: { userID: userid } });
+          
+          if (!user) {
+            return res.status(404).json({
+              status: 'error',
+              data: 'User not found',
+            });
+          }
+          const role = user.corporate === 1 ? 'Kurumsal' : 'Bireysel';
+
+          const maskNumberOptions = {
+            maskWith: "*",
+            unmaskedStartDigits: 4,
+            unmaskedEndDigits: 1 
+          };
+
+          const maskedTckn = MaskData.maskCard(user.TCKN, maskNumberOptions);
+            const getInitials = (firstName, lastName) => {
+            const firstInit = firstName.charAt(0).toUpperCase();
+            const lastInit= lastName.charAt(0).toUpperCase();
+            return `${firstInit}${lastInit}`;
+        };
+
+        const maskedName = getInitials(user.firstName, user.lastName);
+
+          res.status(200).json({
+            status: "success",
+            data: {
+              id: user.userID,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              email: user.email,
+              phoneNumber: user.phoneNumber, 
+              tckn: user.TCKN,
+              role: role,
+              address: user.address,
+              country: user.country,
+              city: user.city,
+              maskedTckn: maskedTckn,
+              maskedName: maskedName
+           
+            
+            },
+          });
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ status: "error", message: "Error occurred" });
+        }
+      },
+      
+    
        deleteUserAccount: async (req, res) => {
         const { password } = req.body;
         try {
