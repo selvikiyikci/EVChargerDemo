@@ -138,7 +138,6 @@ blogapp/public/images/3-1721859475401.jpeg
 blogapp/config.js
 .env
 migrations/20240808122137-update-address-enum.js
-config.json
 
 
 bin/www

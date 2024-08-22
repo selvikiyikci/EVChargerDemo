@@ -172,4 +172,73 @@ module.exports = {
       });
     }
   },
-};
+
+
+  mapStations: async (req, res) => {
+    const { acCondition, dcCondition, availableCondition } = req.params;
+    const { searchText } = req.body;
+
+    try {
+      let connectorConditions = [];
+
+      if (acCondition === '1') {
+          connectorConditions.push({ stationModel: { [Op.like]: '%AC%' } });
+      }
+
+      if (dcCondition === '1') {
+          connectorConditions.push({ stationModel: { [Op.like]: '%DC%' } });
+      }
+
+      if (availableCondition === '1') {
+          connectorConditions.push({ 
+              isPublic: true,
+              status: { [Op.notIn]: ['CHARGING', 'FINISHING'] }
+          });
+      }
+
+      let stationConditions = {};
+      if (searchText) {
+          stationConditions.name = { [Op.like]: `%${searchText}%` };
+      }
+
+      const stations = await Station.findAll({
+          where: stationConditions,
+          include: [
+              {
+                  model: Connector,
+                  where: connectorConditions.length ? { [Op.and]: connectorConditions } : undefined,
+                  attributes: ['id', 'ChargePointId', 'Name', 'xcoordinates', 'ycoordinates', 'detailPhotoLink']
+              }
+          ]
+      });
+
+      const filteredStations = stations.filter(station => station.Connectors.length > 0);
+
+      const data = filteredStations.map(station => ({
+          ChargePointId: station.ChargePointid,
+          Name: station.name,
+          address: station.address,
+          latitude: station.latitude,
+          longitude: station.longitude,
+          connectors: station.connectors.map(connector => ({
+              id: connector.connectorID,
+              ChargePointId: station.chargePointid,
+              Name: connector.Name,
+              xcoordinates: station.latitude,
+              ycoordinates: station.longitude,
+              detailPhotoLink: station.photoURL
+          }))
+      }));
+
+      res.status(200).json({
+          status: 'success',
+          data
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({
+          status: 'error',
+          message: 'Bir hata oluştu'
+      });
+  }
+  }}

@@ -23,6 +23,7 @@
     "mysql2": "^3.11.0",
     "passport": "^0.7.0",
     "passport-http-bearer": "^1.0.1",
+    "pug": "^3.0.3",
     "sequelize": "^6.37.3",
     "validator": "^13.12.0"
   },

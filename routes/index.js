@@ -13,7 +13,7 @@ const transactionController = require('../controller/transactionController.js');
 
 router.post("/auth/phone-Number-approved", userController.phoneNumberCheck );
 router.post("/auth/email-and-birthYear-Approved", verifyToken, userController.emailAndBirthYearCheck );
-router.post(" ", verifyToken, userController.passwordCheck);
+router.post("/auth/check-password", verifyToken, userController.passwordCheck);
 router.post("/auth/check-TCKN",verifyToken, userController.TCKNcheck);
 router.post("/auth/check-tax-number", verifyToken, userController.TaxNoCheck);
 router.post("/auth/check-credit-card-infos", verifyToken, userController.CardInfoCheck);
@@ -27,6 +27,7 @@ router.post("/charge-point/remote-stop-transaction", transactionController.stopC
 router.post("/charge-point/meter-values", transactionController.meterValues);
 router.post("/add-connector", connectorController.addConnector);
 router.get("/payment-transaction-details/:transactionId", transactionController.paymentTransactionDetails);
+router.post("charge-point/map-charge-points/:{acCondition}/:{dcCondition}/:{availableCondition}", stationController.mapStations);
 
 
 
