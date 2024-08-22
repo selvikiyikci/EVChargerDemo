@@ -47,56 +47,6 @@ module.exports = {
     }
 
   },
-
-emailAndBirthYearCheck : async (req, res, next) => {
-  const { firstName, lastName, email, birthYear } = req.body;
-  const  { userid } = req.user;
-  console.log(req + "REQ!!");
-
-    
-      if (!email || !validator.isEmail(email)) {
-        return res.status(400).json({ message: 'Geçersiz email girişi' });
-      }
-      const yearRegex = /^(19|20)\d{2}$/;
-      if (!birthYear || !yearRegex.test(birthYear)) {
-        return res.status(400).json({ message: 'Geçersiz doğum yılı.' });
-      }
-     try {
-      const existingUserEmail = await userService.findOne(userModel, { where: { email: email } });
-  
-      if (existingUserEmail) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Bu email ile bir kullanıcı mevcut.',
-        });
-      }
-  
-    
-      
-    await userModel.update(
-      { firstName, lastName, email, birthYear },
-      { where: { userID: userid } }
-    );
-    
-    
-    console.log(firstName, lastName, email, birthYear);
-
- 
-    res.status(200).json({
-      status: 'success',
-      message: 'Kullanıcı bilgileri başarıyla güncellendi',
-    });
-
-  } catch (error) {
-
-    console.error('Kullanıcı güncelleme hatası:', error);
-    return res.status(500).json({
-      status: 'error',
-      message: 'Internal server hatası',
-    });
-  }
-},
-
   passwordCheck : async (req, res, next) => {
     const { password } = req.body;
     const  { userid } = req.user;
@@ -145,6 +95,55 @@ emailAndBirthYearCheck : async (req, res, next) => {
     }
     
   },
+
+emailAndBirthYearCheck : async (req, res, next) => {
+  const { firstName, lastName, email, birthYear } = req.body;
+  const  { userid } = req.user;
+  console.log(req + "REQ!!");
+
+    
+      if (!email || !validator.isEmail(email)) {
+        return res.status(400).json({ message: 'Geçersiz email girişi' });
+      }
+      const yearRegex = /^(19|20)\d{2}$/;
+      if (!birthYear || !yearRegex.test(birthYear)) {
+        return res.status(400).json({ message: 'Geçersiz doğum yılı.' });
+      }
+     try {
+      const existingUserEmail = await userService.findOne(userModel, { where: { email: email } });
+  
+      if (existingUserEmail) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Bu email ile bir kullanıcı mevcut.',
+        });
+      }
+    
+    await userModel.update(
+      { firstName, lastName, email, birthYear },
+      { where: { userID: userid } }
+    );
+    
+    
+    console.log(firstName, lastName, email, birthYear);
+
+ 
+    res.status(200).json({
+      status: 'success',
+      message: 'Kullanıcı bilgileri başarıyla güncellendi',
+    });
+
+  } catch (error) {
+
+    console.error('Kullanıcı güncelleme hatası:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Internal server hatası',
+    });
+  }
+},
+
+  
   
   TCKNcheck : async (req, res, next) => {
     const { TCKN, country, city, district, address } = req.body;
@@ -167,8 +166,6 @@ emailAndBirthYearCheck : async (req, res, next) => {
         { where: { userID: userid } }
       );
       
-
- 
       res.status(200).json({
         status: 'success',
         message: 'TCKN geçerli ve güncellendi.'
