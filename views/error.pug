@@ -1,0 +1,8 @@
+doctype html
+html
+  head
+    title Error
+  body
+    h1 Error: #{message}
+    if error.stack
+      pre= error.stack
