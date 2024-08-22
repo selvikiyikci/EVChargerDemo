@@ -47,37 +47,40 @@ module.exports = {
     }
 
   },
-  passwordCheck : async (req, res, next) => {
+  passwordCheck: async (req, res) => {
     const { password } = req.body;
-    const  { userid } = req.user;
+    const { userid } = req.user;
   
     console.log("REQUEST!!", req);
-
   
     const hasUppercase = /[A-Z]/.test(password);
     const hasNumber = /\d/.test(password);
     const isValidLength = password.length >= 6;
-
+  
     if (!hasUppercase || !hasNumber || !isValidLength) {
       return res.status(400).json({
         status: 'error',
         data: 'Password must be at least 6 characters long, contain at least one uppercase letter and one number',
       });
     }
-    await userModel.update( { password },{ where: { userID: userid } }
-    );
-
+  
     try {
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
+  
+      // Şifreyi güncelle
       await userModel.update({ password: hashedPassword }, { where: { userID: userid } });
-      const user = await userService.findOne(userModel, { where: { userID: userid } }); 
+  
+      // Kullanıcıyı kontrol et
+      const user = await userService.findOne(userModel, { where: { userID: userid } });
+  
+      // Şifrenin doğru olduğunu doğrula
       const match = await bcrypt.compare(password, user.password);
-
+  
       if (match) {
         return res.status(200).json({
           status: 'success',
-          data: 'Passwords match',
+          data: 'Password updated successfully',
         });
       } else {
         return res.status(400).json({
@@ -86,16 +89,13 @@ module.exports = {
         });
       }
     } catch (err) {
-      console.error('Error comparing passwords:', err);
+      console.error('Error processing request:', err);
       return res.status(500).json({
         status: 'error',
         data: 'Internal server error',
       });
-      
     }
-    
   },
-
 emailAndBirthYearCheck : async (req, res, next) => {
   const { firstName, lastName, email, birthYear } = req.body;
   const  { userid } = req.user;
