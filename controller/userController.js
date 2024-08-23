@@ -9,6 +9,7 @@ const  kontrol = require('istckimlik');
 const validator = require('validator');
 const { CHAR } = require('sequelize');
 const MaskData = require('maskdata');
+const crypto = require('crypto');
 module.exports = {
      phoneNumberCheck: async (req, res) => {
       const { phoneNumber } = req.body;
@@ -50,7 +51,7 @@ module.exports = {
   passwordCheck: async (req, res) => {
     const { password } = req.body;
     const { userid } = req.user;
-    console.log("NEW USER" , userID);
+    console.log("NEW USER" , userid);
   
     const hasUppercase = /[A-Z]/.test(password);
     const hasNumber = /\d/.test(password);
@@ -108,15 +109,7 @@ emailAndBirthYearCheck : async (req, res, next) => {
         return res.status(400).json({ message: 'Geçersiz doğum yılı.' });
       }
      try {
-      const existingUserEmail = await userService.findOne(userModel, { where: { email: email } });
-  
-      if (existingUserEmail) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Bu email ile bir kullanıcı mevcut.',
-        });
-      }
-    
+ 
     await userModel.update(
       { firstName, lastName, email, birthYear },
       { where: { userID: userid } }
@@ -155,12 +148,8 @@ emailAndBirthYearCheck : async (req, res, next) => {
         });
       }
  
-      const existingUser = await userService.findOne(userModel, { where: { TCKN: TCKN } });
-      if (existingUser) {
-        return res.status(400).json({ status: 'error', message: 'Bu TCKN ile bir kullanıcı mevcut.' });
-      }
       await userService.update(userModel,
-        { TCKN, country, city, district, address},
+        { TCKN: encrypted, country, city, district, address},
         { where: { userID: userid } }
       );
       
@@ -192,6 +181,7 @@ emailAndBirthYearCheck : async (req, res, next) => {
 
       if (lastDigit === (10 - (sum % 10)) % 10) {
         try {
+          
           await userService.update(userModel, 
             { companyName, taxNo, taxPlaceName, country, city, district, address }, 
             { where: { userID: userid } }
