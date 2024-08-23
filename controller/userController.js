@@ -50,8 +50,7 @@ module.exports = {
   passwordCheck: async (req, res) => {
     const { password } = req.body;
     const { userid } = req.user;
-  
-    console.log("REQUEST!!", req);
+    console.log("NEW USER" , userID);
   
     const hasUppercase = /[A-Z]/.test(password);
     const hasNumber = /\d/.test(password);
@@ -99,7 +98,6 @@ module.exports = {
 emailAndBirthYearCheck : async (req, res, next) => {
   const { firstName, lastName, email, birthYear } = req.body;
   const  { userid } = req.user;
-  console.log(req + "REQ!!");
 
     
       if (!email || !validator.isEmail(email)) {
