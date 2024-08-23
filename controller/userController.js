@@ -112,7 +112,7 @@ module.exports = {
 
   try {
     // Kullanıcıyı güncelle
-    await userModel.update(
+    await userService.update(userModel,
       { firstName, lastName, email, birthYear },
       { where: { userID: userid } }
     );
@@ -143,9 +143,12 @@ module.exports = {
           message: 'Geçersiz TCKN.'
         });
       }
+ 
+
+
 
       await userService.update(userModel,
-        { TCKN, country, city, district, address},
+        { TCKN: encrypted, country, city, district, address},
         { where: { userID: userid } }
       );
       
