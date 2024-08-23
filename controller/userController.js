@@ -143,12 +143,9 @@ module.exports = {
           message: 'Geçersiz TCKN.'
         });
       }
- 
-
-
 
       await userService.update(userModel,
-        { TCKN: encrypted, country, city, district, address},
+        { TCKN, country, city, district, address},
         { where: { userID: userid } }
       );
       
