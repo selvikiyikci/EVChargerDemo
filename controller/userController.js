@@ -142,8 +142,6 @@ module.exports = {
           message: 'Geçersiz TCKN.'
         });
       }
-
-const encryptedTCKN = encryptTCKN(TCKN, 'secret key 123');
  
       await userService.update(userModel,
         { TCKN, country, city, district, address},
