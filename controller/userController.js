@@ -104,14 +104,13 @@ module.exports = {
   if (!email || !validator.isEmail(email)) {
     return res.status(400).json({ message: 'Geçersiz email girişi' });
   }
-
   const yearRegex = /^(19|20)\d{2}$/;
   if (!birthYear || !yearRegex.test(birthYear)) {
     return res.status(400).json({ message: 'Geçersiz doğum yılı.' });
   }
 
   try {
-    // Kullanıcıyı güncelle
+
     await userService.update(userModel,
       { firstName, lastName, email, birthYear },
       { where: { userID: userid } }
@@ -143,12 +142,11 @@ module.exports = {
           message: 'Geçersiz TCKN.'
         });
       }
+
+const encryptedTCKN = encryptTCKN(TCKN, 'secret key 123');
  
-
-
-
       await userService.update(userModel,
-        { TCKN: encrypted, country, city, district, address},
+        { TCKN, country, city, district, address},
         { where: { userID: userid } }
       );
       
@@ -333,7 +331,6 @@ module.exports = {
             });
           }
           const role = user.corporate === 1 ? 'Kurumsal' : 'Bireysel';
-
           const maskNumberOptions = {
             maskWith: "*",
             unmaskedStartDigits: 4,
@@ -359,7 +356,7 @@ module.exports = {
               phoneNumber: user.phoneNumber, 
               tckn: user.TCKN,
               role: role,
-              address: user.address,
+              address: user.address, 
               country: user.country,
               city: user.city,
               maskedTckn: maskedTckn,
