@@ -222,21 +222,6 @@ module.exports = {
 
       if (lastDigit === (10 - (sum % 10)) % 10) {
         try {
-      
-            const existingTaxNoUser = await userModel.findOne({
-              where: {
-                taxNo: hashedTaxNo,
-                userID: { [Op.ne]: userid } 
-              }
-            });
-  
-            if (existingTaxNoUser) {
-              return res.status(400).json({
-                status: 'error',
-                message: 'Bu vergi numarası başka bir kullanıcı tarafından kullanılıyor.'
-              });
-            }
-          
           await userService.update(userModel, 
             { companyName, taxNo: hashedtaxNo, taxPlaceName, country, city, district, address }, 
             { where: { userID: userid } }
