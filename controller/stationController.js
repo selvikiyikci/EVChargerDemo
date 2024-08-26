@@ -1,5 +1,6 @@
 const { Op } = require("sequelize");
 const { stationModel } = require("../data/db.js");
+const { connectorModel} = require("../data/db.js")
 
 
 const haversineDistance = (lat1, lon1, lat2, lon2) => {
@@ -173,72 +174,87 @@ module.exports = {
     }
   },
 
-
   mapStations: async (req, res) => {
     const { acCondition, dcCondition, availableCondition } = req.params;
-    const { searchText } = req.body;
+    const { searchText } = req.body; 
 
     try {
-      let connectorConditions = [];
+        let connectorConditions = {};
+        if (acCondition === '1') {
+            connectorConditions.chargePointid = { [Op.like]: '10%' };
+        }
+        if (dcCondition === '1') {
+            connectorConditions.chargePointid = { [Op.like]: '11%' };
+        }
+        if (availableCondition === '1') {
+            connectorConditions.status = { [Op.notIn]: ['CHARGING', 'FINISHING'] };
+        }
+        
+    
+        let stationConditions = {};
+        if (connectorConditions.chargePointid) {
+            stationConditions.chargePointid = connectorConditions.chargePointid;
+        }
+        
+        if (searchText) {
+            if (searchText.toUpperCase().includes('AC')) {
+                stationConditions.chargePointid = { [Op.like]: '10%' };
+            } else if (searchText.toUpperCase().includes('DC')) {
+                stationConditions.chargePointid = { [Op.like]: '11%' };
+            } else {
+                stationConditions.name = { [Op.like]: `%${searchText}%` };
+            }
+        }
 
-      if (acCondition === '1') {
-          connectorConditions.push({ stationModel: { [Op.like]: '%AC%' } });
-      }
+      
+        const stations = await stationModel.findAll({
+            where: stationConditions,
+            include: [
+                {
+                    model: connectorModel,
+                    as: 'connectors',
+                  //  where: connectorConditions,
+                   // attributes: ['id', 'connectorID', 'lat', 'long', 'photoURL']
+                }
+            ]
+        });
 
-      if (dcCondition === '1') {
-          connectorConditions.push({ stationModel: { [Op.like]: '%DC%' } });
-      }
-
-      if (availableCondition === '1') {
-          connectorConditions.push({ 
-              isPublic: true,
-              status: { [Op.notIn]: ['CHARGING', 'FINISHING'] }
-          });
-      }
-
-      let stationConditions = {};
-      if (searchText) {
-          stationConditions.name = { [Op.like]: `%${searchText}%` };
-      }
-
-      const stations = await Station.findAll({
-          where: stationConditions,
-          include: [
-              {
-                  model: Connector,
-                  where: connectorConditions.length ? { [Op.and]: connectorConditions } : undefined,
-                  attributes: ['id', 'ChargePointId', 'Name', 'xcoordinates', 'ycoordinates', 'detailPhotoLink']
-              }
-          ]
-      });
-
-      const filteredStations = stations.filter(station => station.Connectors.length > 0);
-
-      const data = filteredStations.map(station => ({
-          ChargePointId: station.ChargePointid,
+        const data = stations.map(station => ({
+          ChargePointId: station.id,
           Name: station.name,
           address: station.address,
           latitude: station.latitude,
           longitude: station.longitude,
-          connectors: station.connectors.map(connector => ({
-              id: connector.connectorID,
+          units: station.connectors.map(connector => ({   
               ChargePointId: station.chargePointid,
-              Name: connector.Name,
+              Name: station.name,
+              AreaId: station.areaId,
               xcoordinates: station.latitude,
               ycoordinates: station.longitude,
-              detailPhotoLink: station.photoURL
-          }))
+              detailPhotoLink: station.photoURL,
+              connectors: {
+                  id: connector.id,
+                  ChargePointId: station.chargePointid,
+                  ConnectorId: connector.connectorID,
+                  areaID: station.areaId
+              }
+          })),
+          latlng: {
+              latitude: station.latitude,
+              longitude: station.longitude
+          }
       }));
-
-      res.status(200).json({
-          status: 'success',
-          data
-      });
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({
-          status: 'error',
-          message: 'Bir hata oluştu'
-      });
-  }
-  }}
+        res.status(200).json({
+            status: 'success',
+            data
+        });
+    } catch (error) {
+        console.error('Error occurred:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Bir hata oluştu',
+            error: error.message
+        });
+    }
+}
+}
