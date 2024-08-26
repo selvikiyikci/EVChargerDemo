@@ -301,12 +301,12 @@ module.exports = {
 
 
       postLogin: async (req, res) => {
-        const { email, password } = req.body;
+        const { phoneNumber, password } = req.body;
     
         try {
           const user = await userService.findOne(userModel,{
             where: {  
-              email: email
+              phoneNumber: phoneNumber
             }
           });
           console.log('User retrieved:', user);
