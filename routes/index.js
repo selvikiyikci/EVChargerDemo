@@ -27,7 +27,8 @@ router.post("/charge-point/remote-stop-transaction", transactionController.stopC
 router.post("/charge-point/meter-values", transactionController.meterValues);
 router.post("/add-connector", connectorController.addConnector);
 router.get("/payment-transaction-details/:transactionId", transactionController.paymentTransactionDetails);
-router.post("charge-point/map-charge-points/:{acCondition}/:{dcCondition}/:{availableCondition}", stationController.mapStations);
+router.post("/charge-point/map-charge-points/:acCondition/:dcCondition/:availableCondition", stationController.mapStations);
+
 
 
 
