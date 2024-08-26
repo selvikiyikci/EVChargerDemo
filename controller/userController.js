@@ -50,6 +50,14 @@ module.exports = {
               });
             }
             const userid = await uuidv4();
+            const existingUser = await userModel.findOne({ where: { phoneNumber } });
+
+            if (existingUser) {
+              return res.status(400).json({
+                status: 'error',
+                data: 'Bu telefon numarası ile zaten kayıtlı bir kullanıcı mevcut.'
+              });
+            }
             const newUser = await userService.findOrCreate(userModel, {where : {phoneNumber : phoneNumber}, defaults : {userID : userid, phoneNumber : phoneNumber } })
 
             const token = jwt.sign(
@@ -165,6 +173,19 @@ module.exports = {
           message: 'Geçersiz TCKN.'
         });
       }
+      const existingUser = await userModel.findOne({
+        where: {
+          TCKN: encryptedData,
+          userID: { [Op.ne]: userid }
+        }
+      });
+
+      if (existingUser) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Bu TCKN başka bir kullanıcı tarafından kullanılıyor.'
+        });
+      }
       const encryptedData = encrypt(TCKN);
       await userService.update(userModel,
         { TCKN: encryptedData, country, city, district, address},
@@ -201,6 +222,20 @@ module.exports = {
 
       if (lastDigit === (10 - (sum % 10)) % 10) {
         try {
+      
+            const existingTaxNoUser = await userModel.findOne({
+              where: {
+                taxNo: hashedTaxNo,
+                userID: { [Op.ne]: userid } 
+              }
+            });
+  
+            if (existingTaxNoUser) {
+              return res.status(400).json({
+                status: 'error',
+                message: 'Bu vergi numarası başka bir kullanıcı tarafından kullanılıyor.'
+              });
+            }
           
           await userService.update(userModel, 
             { companyName, taxNo: hashedtaxNo, taxPlaceName, country, city, district, address }, 
