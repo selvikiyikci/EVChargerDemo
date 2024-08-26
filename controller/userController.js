@@ -10,6 +10,27 @@ const validator = require('validator');
 const { CHAR } = require('sequelize');
 const MaskData = require('maskdata');
 const crypto = require('crypto');
+const CryptoJS = require('crypto-js');
+const algorithm = 'aes-256-cbc';
+const key = crypto.randomBytes(32); // 256-bit key for AES-256
+const iv = crypto.randomBytes(16);  // Initialization vector
+
+// Encrypt function
+function encrypt(text) {
+    let cipher = crypto.createCipheriv(algorithm, key, iv);
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return encrypted;
+}
+
+// Decrypt function
+function decrypt(encryptedText) {
+    let decipher = crypto.createDecipheriv(algorithm, key, iv);
+    let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+}
+
 module.exports = {
      phoneNumberCheck: async (req, res) => {
       const { phoneNumber } = req.body;
@@ -134,6 +155,8 @@ module.exports = {
   TCKNcheck : async (req, res, next) => {
     const { TCKN, country, city, district, address } = req.body;
     const { userid } = req.user;
+    console.log("NEW USER" , userid);
+   
     try {
 
       if (!TCKN || !kontrol.isTCKimlik(TCKN)) {
@@ -142,11 +165,12 @@ module.exports = {
           message: 'Geçersiz TCKN.'
         });
       }
- 
+      const encryptedData = encrypt(TCKN);
       await userService.update(userModel,
-        { TCKN, country, city, district, address},
+        { TCKN: encryptedData, country, city, district, address},
         { where: { userID: userid } }
       );
+      console.log("Encrypted:", encryptedData);
       
       res.status(200).json({
         status: 'success',
@@ -164,6 +188,7 @@ module.exports = {
   TaxNoCheck: async (req, res, next) => {
     const { companyName, taxNo, taxPlaceName, country, city, district, address } = req.body;
     const { userid } = req.user;
+    const hashedtaxNo = CryptoJS.SHA256(taxNo).toString(CryptoJS.enc.Hex);
     let sum = 0;
     if (taxNo !== null && taxNo.length === 10 && !isNaN(taxNo)) {
       const lastDigit = parseInt(taxNo.charAt(9), 10);
@@ -178,7 +203,7 @@ module.exports = {
         try {
           
           await userService.update(userModel, 
-            { companyName, taxNo, taxPlaceName, country, city, district, address }, 
+            { companyName, taxNo: hashedtaxNo, taxPlaceName, country, city, district, address }, 
             { where: { userID: userid } }
           );
           
@@ -329,6 +354,7 @@ module.exports = {
             });
           }
           const role = user.corporate === 1 ? 'Kurumsal' : 'Bireysel';
+          const decryptedData = decrypt(user.TCKN);
           const maskNumberOptions = {
             maskWith: "*",
             unmaskedStartDigits: 4,
@@ -352,7 +378,7 @@ module.exports = {
               lastName: user.lastName,
               email: user.email,
               phoneNumber: user.phoneNumber, 
-              tckn: user.TCKN,
+              tckn: decryptedData,
               role: role,
               address: user.address, 
               country: user.country,
