@@ -335,7 +335,7 @@ module.exports = {
           if (!user) {
             return res.status(400).json({
               status: 'error',
-              message: 'Geçersiz email'
+              message: 'Geçersiz telefon numarası'
             });
           }
     
