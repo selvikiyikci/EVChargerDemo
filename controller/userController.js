@@ -342,10 +342,16 @@ module.exports = {
           const match = await bcrypt.compare(password, user.password);
     
           if (match) {
-    
+            const token = jwt.sign(
+              { id: user.id, phoneNumber: user.phoneNumber },
+              process.env.TOKEN_KEY, 
+          );
+      
+  
             return res.status(200).json({
               status: 'success',
               message: 'Login başarılı',
+              token: token
              
             });
           }
