@@ -12,8 +12,8 @@ const MaskData = require('maskdata');
 const crypto = require('crypto');
 const CryptoJS = require('crypto-js');
 const algorithm = 'aes-256-cbc';
-const key = crypto.randomBytes(32); // 256-bit key for AES-256
-const iv = crypto.randomBytes(16);  // Initialization vector
+const key = crypto.randomBytes(32);
+const iv = crypto.randomBytes(16); 
 
 // Encrypt function
 function encrypt(text) {
@@ -160,51 +160,58 @@ module.exports = {
     });
   }
 },
-  TCKNcheck : async (req, res, next) => {
-    const { TCKN, country, city, district, address } = req.body;
-    const { userid } = req.user;
-    console.log("NEW USER" , userid);
-   
-    try {
+TCKNcheck: async (req, res, next) => {
+  const { TCKN, country, city, district, address } = req.body;
+  const { userid } = req.user;
+  console.log("NEW USER", userid);
 
-      if (!TCKN || !kontrol.isTCKimlik(TCKN)) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Geçersiz TCKN.'
-        });
-      }
-      const existingUser = await userModel.findOne({
-        where: {
-          TCKN: encryptedData,
-          userID: { [Op.ne]: userid }
-        }
-      });
-
-      if (existingUser) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Bu TCKN başka bir kullanıcı tarafından kullanılıyor.'
-        });
-      }
-      const encryptedData = encrypt(TCKN);
-      await userService.update(userModel,
-        { TCKN: encryptedData, country, city, district, address},
-        { where: { userID: userid } }
-      );
-      console.log("Encrypted:", encryptedData);
-      
-      res.status(200).json({
-        status: 'success',
-        message: 'TCKN geçerli ve güncellendi.'
-      });
-    } catch (error) {
-      console.error('TCKN doğrulama hatası:', error);
-      return res.status(500).json({
+  try {
+ 
+    if (!TCKN || !kontrol.isTCKimlik(TCKN)) {
+      return res.status(400).json({
         status: 'error',
-        message: 'Internal server hatası'
+        message: 'Geçersiz TCKN.'
       });
     }
-  },
+
+
+    const encryptedData = encrypt(TCKN);
+
+    const existingUser = await userModel.findOne({
+      where: {
+        TCKN: encryptedData,
+        userID: { [Op.ne]: userid }
+      }
+    });
+
+    if (existingUser) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Bu TCKN başka bir kullanıcı tarafından kullanılıyor.'
+      });
+    }
+
+    await userService.update(
+      userModel,
+      { TCKN: encryptedData, country, city, district, address },
+      { where: { userID: userid } }
+    );
+
+    console.log("Encrypted:", encryptedData);
+
+    res.status(200).json({
+      status: 'success',
+      message: 'TCKN geçerli ve güncellendi.'
+    });
+
+  } catch (error) {
+    console.error('TCKN doğrulama hatası:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Internal server hatası'
+    });
+  }
+},
 
   TaxNoCheck: async (req, res, next) => {
     const { companyName, taxNo, taxPlaceName, country, city, district, address } = req.body;
@@ -335,7 +342,7 @@ module.exports = {
           if (!user) {
             return res.status(400).json({
               status: 'error',
-              message: 'Geçersiz telefon numarası'
+              message: 'Geçersiz telefon'
             });
           }
     
