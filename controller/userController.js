@@ -14,6 +14,7 @@ const CryptoJS = require('crypto-js');
 const algorithm = 'aes-256-cbc';
 const key = crypto.randomBytes(32);
 const iv = crypto.randomBytes(16); 
+const { Op } = require('sequelize'); 
 
 // Encrypt function
 function encrypt(text) {
