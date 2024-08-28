@@ -266,7 +266,7 @@ TCKNcheck: async (req, res, next) => {
     
      
       const validateExpiryDate = (month, year) => {
-        const currentYear = new Date().getFullYear();
+        const currentYear = new Date().getFullYear() % 100;
         const currentMonth = new Date().getMonth() + 1;
         const expiryYear = parseInt(year, 10);
         const expiryMonth = parseInt(month, 10);
